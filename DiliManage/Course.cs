@@ -24,6 +24,13 @@ namespace DiliManage
         public static string Content;
         public static string RStaDay;
         public static string RFinDay;
+
+        public static string STime1;
+        public static string STime2;
+
+        public static string ETime1;
+        public static string ETime2;
+
         public static int mode1 = 0;
         public static int mode2 = 0;
         public static string preYear;
@@ -53,25 +60,25 @@ namespace DiliManage
             InitializeComponent();
             set_clear();
             DBconnect();
-            set_table("select * from TATM_COR");
+            set_table("select APP_YEAR, APP_SEASON, COS_SDATE,COS_EDATE, COS_CAR, COS_RSDATE,COS_REDATE,COS_STIME,COS_ETIME,count(*) COUNT FROM TATM_COR group by APP_YEAR,APP_SEASON;");
 
         }
 
-        private void Cou_Click(object sender, EventArgs e)
+        private void Stu_Click(object sender, EventArgs e)
         {
             pra cou = new pra();
             this.Close();
             cou.Show();
         }
 
-        private void Re_Click(object sender, EventArgs e)
+        private void Cou_Click(object sender, EventArgs e)
         {
             requset As = new requset();
             this.Close();
             As.Show();
         }
 
-        private void Stu_Click(object sender, EventArgs e)
+        private void Re_Click(object sender, EventArgs e)
         {
             Stu_sel apt = new Stu_sel();
             this.Close();
@@ -79,14 +86,14 @@ namespace DiliManage
         }
 
 
-        private void Ft_Click(object sender, EventArgs e)
+        private void Apt_Click(object sender, EventArgs e)
         {
             FT FT = new FT();
             this.Close();
             FT.Show();
         }
 
-        private void Apt_Click(object sender, EventArgs e)
+        private void Ft_Click(object sender, EventArgs e)
         {
 
             Apt_sel stu = new Apt_sel();
@@ -111,11 +118,17 @@ namespace DiliManage
             }
             Year = textBox1.Text;
             Season = radioButton1.Checked ? "하계" : "동계";
-            CourseName = textBox3.Text;
+            
             StaDay = dateTimePicker1.Text;
             FinDay = dateTimePicker2.Text;
             RStaDay = dateTimePicker3.Text;
             RFinDay = dateTimePicker4.Text;
+
+            CourseName = textBox3.Text;
+            STime1 = comboBox2.Text;
+            STime2 = comboBox4.Text;
+            ETime1 = comboBox3.Text;
+            ETime2 = comboBox5.Text;
 
             Manager = textBox4.Text;
             Content = textBox5.Text;
@@ -129,8 +142,57 @@ namespace DiliManage
             Console.WriteLine(Content);
             Console.WriteLine(RStaDay);
             Console.WriteLine(RFinDay);
+            Console.WriteLine(STime1);
+            Console.WriteLine(STime2);
+            Console.WriteLine(ETime1);
+            Console.WriteLine(ETime2);
             Console.WriteLine("-------테스트-------");
         }
+        private void Common_set_clear()
+        {
+            set_value();
+            int check = 0;
+            if(space_check(CourseName)==0)
+                if(space_check(Manager)==0)
+                    if (space_check(Content) == 0)
+                    {
+                        check = 1;
+                    }
+            Console.WriteLine(check);
+            if(check == 1)
+            {
+                if (MessageBox.Show("공통정보의 내용들을 지우시겠습니까?", "YesOrNo", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    textBox1.Text = "";
+                    dateTimePicker1.Text = "";
+                    dateTimePicker2.Text = "";
+                    button6.Enabled = true;
+                    button8.Enabled = false;
+                    button9.Enabled = false;
+                    dateTimePicker3.Text = "";
+                    dateTimePicker4.Text = "";
+                    dateTimePicker2.Enabled = false;
+                    dateTimePicker4.Enabled = false;
+                    comboBox2.Text = "";
+                    comboBox4.Text = "";
+                    comboBox3.Text = "";
+                    comboBox5.Text = "";
+                }
+                else
+                {
+                    MessageBox.Show("취소되었습니다");
+                    
+                }
+            }
+            else
+            {
+                textBox3.Text = "";
+                textBox4.Text = "";
+                textBox5.Text = "";
+            }
+            
+        }
+
         private void button6_Click(object sender, EventArgs e)
         {
             //입력
@@ -138,7 +200,7 @@ namespace DiliManage
             if (All_space_check() == 1)
             {
                 insertSqlQuery();
-                set_table("SELECT * FROM TATM_COR");
+                set_table("select APP_YEAR, APP_SEASON, COS_SDATE,COS_EDATE, COS_CAR, COS_RSDATE,COS_REDATE,COS_STIME,COS_ETIME,count(*) COUNT FROM TATM_COR group by APP_YEAR,APP_SEASON;");
                 set_clear();
             }
 
@@ -190,38 +252,32 @@ namespace DiliManage
             }
             return 1;
         }
+        private int space_check(string text)
+        {
+            if(text == "")
+            {
+                return 0;
+            }
+            return 1;
+        }
         private int All_space_check()
         {
             int state = 0;
             //전체 빈칸체크
             if (space_check(Year, "년도") == 1)
-            {
                 if (space_check(Season, "계절") == 1)
-                {
                     if (space_check(CourseName, "코스명") == 1)
-                    {
-                        if (space_check(StaDay, "시작일") == 1)
-                        {
-                            if (space_check(FinDay, "종료일") == 1)
-                            {
-                                if (space_check(Manager, "담당자") == 1)
-                                {
-                                    if (space_check(Content, "실습내용") == 1)
-                                    {
-                                        if(space_check(RStaDay,"신청시작일") == 1)
-                                        {
-                                            if (space_check(RFinDay, "신청종료일") == 1)
-                                            {
-                                                state = 1;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                            if (space_check(StaDay, "시작일") == 1)
+                               if (space_check(FinDay, "종료일") == 1)
+                                if (space_check(RStaDay, "신청시작일") == 1)
+                                    if (space_check(RFinDay, "신청종료일") == 1)
+                                        if (space_check(STime1, "출퇴근시간") == 1)
+                                         if (space_check(STime2, "출퇴근시간") == 1)
+                                              if (space_check(ETime1, "출퇴근시간") == 1)
+                                                   if (space_check(ETime2, "출퇴근시간") == 1)
+                                                        if (space_check(Manager, "담당자") == 1)
+                                                            if (space_check(Content, "실습내용") == 1)
+                                                                        state = 1;
             if (state == 1)
             {
                 return 1;
@@ -265,7 +321,7 @@ namespace DiliManage
                 sql += "APP_SEASON='" + preSeason + "'AND ";
                 sql += "COS_NAME='" + preCourseName + "'";
                 Console.WriteLine(sql);
-                set_table("select * from TATM_COR");
+                set_table("select APP_YEAR, APP_SEASON, COS_SDATE,COS_EDATE, COS_CAR, COS_RSDATE,COS_REDATE,COS_STIME,COS_ETIME,count(*) COUNT FROM TATM_COR group by APP_YEAR,APP_SEASON;");
                 if (MessageBox.Show("선택하신 정보를 수정하시겠습니까", "YesOrNo", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     try
@@ -283,7 +339,7 @@ namespace DiliManage
                     finally
                     {
                         reader.Close();
-                        set_table("select * from TATM_COR");
+                        set_table("select APP_YEAR, APP_SEASON, COS_SDATE,COS_EDATE, COS_CAR, COS_RSDATE,COS_REDATE,COS_STIME,COS_ETIME,count(*) COUNT FROM TATM_COR group by APP_YEAR,APP_SEASON;");
                         set_clear();
                     }
 
@@ -325,7 +381,7 @@ namespace DiliManage
                     finally
                     {
                         reader.Close();
-                        set_table("select * from TATM_COR");
+                        set_table("select APP_YEAR, APP_SEASON, COS_SDATE,COS_EDATE, COS_CAR, COS_RSDATE,COS_REDATE,COS_STIME,COS_ETIME,count(*) COUNT FROM TATM_COR group by APP_YEAR,APP_SEASON;");
                         set_clear();
                     }
                    
@@ -344,20 +400,25 @@ namespace DiliManage
             dateTimePicker2.Text = "";
             textBox4.Text = "";
             textBox5.Text = "";
-            button6.Enabled = true;
+            button6.Enabled = false;
             button8.Enabled = false;
             button9.Enabled = false;
             dateTimePicker3.Text = "";
             dateTimePicker4.Text = "";
             dateTimePicker2.Enabled = false;
             dateTimePicker4.Enabled = false;
+            comboBox2.Text = "";
+            comboBox4.Text = "";
+            comboBox3.Text = "";
+            comboBox5.Text = "";
+            groupBox3.Enabled = false;
 
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             set_value();
-            set_clear();
+            Common_set_clear();
         }
 
         private void checked_year(object sender, EventArgs e)
@@ -374,18 +435,12 @@ namespace DiliManage
             }
             else
             {
-                MessageBox.Show("숫자");
                 //숫자
-                //숫자일 경우 numChk 의 값은 101 이 된다.
             }
 
         }
 
-        private void panel3_Paint(object sender, PaintEventArgs e)
-        {
 
-
-        }
 
         private void set_table(string sql)
         {
@@ -408,13 +463,11 @@ namespace DiliManage
                     listView1.GridLines = true;
                     arr[0] = reader["APP_YEAR"].ToString();
                     arr[1] = reader["APP_SEASON"].ToString();
-                    arr[2] = reader["COS_NAME"].ToString();
-                    arr[5] = reader["COS_CONT"].ToString();
-                    arr[3] = reader["COS_SDATE"].ToString();
-                    arr[4] = reader["COS_EDATE"].ToString();
-                    arr[8] = reader["COS_CAR"].ToString();
-                    arr[6] = reader["COS_RSDATE"].ToString();
-                    arr[7] = reader["COS_REDATE"].ToString();
+                    arr[2] = reader["COS_SDATE"].ToString();
+                    arr[3] = reader["COS_EDATE"].ToString();
+                    arr[4] = reader["COS_RSDATE"].ToString();
+                    arr[5] = reader["COS_REDATE"].ToString();
+                    arr[6] = reader["COUNT"].ToString();
                     lvt = new ListViewItem(arr);
                     listView1.Items.Add(lvt);
 
@@ -442,24 +495,6 @@ namespace DiliManage
         {
             mode1 = 1;
             Console.WriteLine("11");
-        }
-
-        private void c1(object sender, LayoutEventArgs e)
-        {
-        }
-
-        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void check_TimePicker(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void check_TimePicker1(object sender, MouseEventArgs e)
-        {
         }
 
         private void set_TimePicker1(object sender, MouseEventArgs e)
@@ -490,6 +525,8 @@ namespace DiliManage
             dateTimePicker4.Enabled = true;
         }
 
+
+
         private void listView1_index_click(object sender, MouseEventArgs e)
         {
             ListView.SelectedListViewItemCollection itemColl = listView1.SelectedItems;
@@ -510,18 +547,17 @@ namespace DiliManage
                 {
                     radioButton2.Checked = true; 
                 }
-                textBox3.Text = item.SubItems[2].Text;
 
-                DateTime.TryParse(item.SubItems[3].Text, out dt1);
+                DateTime.TryParse(item.SubItems[2].Text, out dt1);
                 dateTimePicker1.Value = dt1;
                 
-                DateTime.TryParse(item.SubItems[4].Text, out dt2);
+                DateTime.TryParse(item.SubItems[3].Text, out dt2);
                 dateTimePicker2.Value = dt2;
 
-                DateTime.TryParse(item.SubItems[6].Text, out dt3);
+                DateTime.TryParse(item.SubItems[4].Text, out dt3);
                 dateTimePicker3.Value = dt3;
 
-                DateTime.TryParse(item.SubItems[7].Text, out dt4);
+                DateTime.TryParse(item.SubItems[5].Text, out dt4);
                 dateTimePicker4.Value = dt4;
             
                 Console.WriteLine(dt1.ToString());
@@ -532,14 +568,70 @@ namespace DiliManage
                 //dateTimePicker3.Value = item.SubItems[6].ToString();
                 //dateTimePicker4.Value = item.SubItems[7].ToString();
 
-                textBox4.Text = item.SubItems[8].Text;
-                textBox5.Text = item.SubItems[5].Text;
             }
             button1.Enabled = true;
             button6.Enabled = false;
-            button8.Enabled = true;
-            button9.Enabled = true;
+            button8.Enabled = false;
+            button9.Enabled = false;
 
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel5_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            set_value();
+            string text = $"년도:{Year}\n";
+            text += $"계절:{Season}\n";
+            text += $"실습시작일:{StaDay}\n";
+            text += $"실습종료일:{FinDay}\n";
+            text += $"실습신청시작일:{RStaDay}\n";
+            text += $"실습신청종료일:{RFinDay}\n";
+            text += $"출근시간:{STime1}:{STime2}:\n";
+            text += $"퇴근시간:{ETime1}:{ETime2}\n";
+
+            if (space_check(Year, "년도") == 1)
+            {
+                if (space_check(Season, "계절") == 1)
+                        if (space_check(StaDay, "시작일") == 1)
+                            if (space_check(FinDay, "종료일") == 1)
+                                if (space_check(RStaDay, "신청시작일") == 1)
+                                    if (space_check(RFinDay, "신청종료일") == 1)
+                                        if (space_check(STime1, "출퇴근시간") == 1)
+                                            if (space_check(STime2, "출퇴근시간") == 1)
+                                                if (space_check(ETime1, "출퇴근시간") == 1)
+                                                    if (space_check(ETime2, "출퇴근시간") == 1)
+                                                            if (MessageBox.Show($"{text}가 맞으십니까?", "YesOrNo", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                                            {
+                                                                MessageBox.Show("확인");
+                                                                groupBox2.Enabled = false;
+                                                                groupBox3.Enabled = true;
+                                                                button6.Enabled = true;
+
+                                                    }
+                                                    else
+                                                            {
+                                                                MessageBox.Show("취소");
+                                                            }
+            }
         }
     }
 }
